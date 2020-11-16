@@ -1,6 +1,6 @@
 FROM scratch
 
-LABEL maintainer="kacper.kuzniarski@gmail.com"
+LABEL maintainer="mateusz.kozak97@gmail.com"
 LABEL description="Przykladowy Dockerfile dla serwera Apache & PHP."
 
 ENV PHPVERSION=7

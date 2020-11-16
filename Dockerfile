@@ -1,12 +1,19 @@
-FROM alpine:latest
-LABEL maintainer="PwChO <email@domena>"
-LABEL description="Przykladowy Dockerfile dla serwera NGINX."
-RUN apk add --update nginx && \
-rm -rf /var/cache/apk/* && \
-mkdir -p /tmp/nginx/
-COPY files/nginx.conf /etc/nginx/nginx.conf
-COPY files/default.conf /etc/nginx/conf.d/default.conf
-ADD files/html.tar.gz /usr/share/nginx/
+FROM scratch
+
+LABEL maintainer="kacper.kuzniarski@gmail.com"
+LABEL description="Przykladowy Dockerfile dla serwera Apache & PHP."
+
+ENV PHPVERSION=7
+
+ADD files/alpine-minirootfs-3.12.1-x86_64.tar.gz /
+
+RUN apk add --update apache2 php${PHPVERSION}-apache2 php${PHPVERSION} && \
+        rm -rf /var/cache/apk/* && \
+        # mkdir /run/apache2/ && \
+        rm -rf /var/www/localhost/htdocs/index.html && \
+        echo "<?php phpinfo(); ?>" > /var/www/localhost/htdocs/index.php && \
+        chmod 755 /var/www/localhost/htdocs/index.php
+
 EXPOSE 80/tcp
-ENTRYPOINT ["nginx"]
-CMD ["-g", "daemon off;"]
+ENTRYPOINT ["httpd"]
+CMD ["-D", "FOREGROUND"]

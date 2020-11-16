@@ -1,19 +1,15 @@
-FROM scratch
-
-LABEL maintainer="mateusz.kozak97@gmail.com"
-LABEL description="Przykladowy Dockerfile dla serwera Apache & PHP."
-
-ENV PHPVERSION=7
-
-ADD alpine-minirootfs-3.12.1-x86_64.tar.gz /
-
-RUN apk add --update apache2 php${PHPVERSION}-apache2 php${PHPVERSION} && \
-        rm -rf /var/cache/apk/* && \
-        # mkdir /run/apache2/ && \
-        rm -rf /var/www/localhost/htdocs/index.html && \
-        echo "<?php phpinfo(); ?>" > /var/www/localhost/htdocs/index.php && \
-        chmod 755 /var/www/localhost/htdocs/index.php
-
-EXPOSE 80/tcp
-ENTRYPOINT ["httpd"]
-CMD ["-D", "FOREGROUND"]
+FROM scratch as builder                                                      
+                                                                             
+WORKDIR /python-http-hello-world/                                            
+                                                                             
+ADD https://raw.githubusercontent.com/kuzxnia/lab6/main/test.py ./test.py                 
+                                                                             
+FROM python:3.8-buster                                                       
+                                                                             
+RUN pip install --upgrade pip && \                                           
+    pip install --no-cache-dir flask flask-restful                           
+                                                                             
+COPY --from=builder /python-http-hello-world/test.py .                       
+                                                                             
+ENTRYPOINT ["python"]                                                        
+CMD ["test.py"]
